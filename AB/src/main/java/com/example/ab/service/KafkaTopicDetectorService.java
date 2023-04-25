@@ -66,22 +66,30 @@ public class KafkaTopicDetectorService {
         cdsTopics.addAll(newCdsTopics);
 
         dsServicesToGenerate.stream()
-                .forEach(t -> sendServiceToKafka("CDS", Set.of(t)));
+                .forEach(t -> sendDsServiceToKafka("CDS", Set.of(t)));
 
         generateSsServices(ssServicesToGenerate);
 
         rsToGenerate.stream()
-                .forEach(t -> sendServiceToKafka("RS", Set.of(t)));
+                .forEach(t -> sendRsServiceToKafka("RS", Set.of(t)));
     }
 
     private void generateSsServices(Set<Map.Entry<String, String>> ssServicesToGenerate) {
         for (Map.Entry<String, String> pair : ssServicesToGenerate) {
-            sendServiceToKafka("SS", Set.of(pair.getKey(), pair.getValue()));
+            sendSsServiceToKafka("SS", Set.of(pair.getKey(), pair.getValue()));
         }
     }
 
-    private void sendServiceToKafka(String serviceName, Set<String> topics) {
-        kafkaSender.send(new GeneratedServiceDTO(serviceName, topics));
+    private void sendRsServiceToKafka(String serviceName, Set<String> topics) {
+        kafkaSender.send("createnewrsservice", new GeneratedServiceDTO(serviceName, topics));
+    }
+
+    private void sendSsServiceToKafka(String serviceName, Set<String> topics) {
+        kafkaSender.send("createnewssservice", new GeneratedServiceDTO(serviceName, topics));
+    }
+
+    private void sendDsServiceToKafka(String serviceName, Set<String> topics) {
+        kafkaSender.send("createnewdsservice", new GeneratedServiceDTO(serviceName, topics));
     }
 
     private Set<String> generateRsServiceNames(Set<String> cdsTopics, Set<String> newCdsTopics) {

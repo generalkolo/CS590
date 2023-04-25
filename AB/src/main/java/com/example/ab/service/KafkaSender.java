@@ -10,7 +10,7 @@ public class KafkaSender {
     @Autowired
     private KafkaTemplate<String, GeneratedServiceDTO> kafkaTemplate;
 
-    public void send(GeneratedServiceDTO generatedServiceDTO){
-        kafkaTemplate.send("generatedService", generatedServiceDTO);
+    public void send(String topic, GeneratedServiceDTO generatedServiceDTO){
+        kafkaTemplate.send(topic, generatedServiceDTO);
     }
 }
